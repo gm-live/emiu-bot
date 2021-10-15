@@ -1,0 +1,14 @@
+Using version ^3.4 for irazasyed/telegram-bot-sdk
+./composer.json has been updated
+Running composer update irazasyed/telegram-bot-sdk
+Loading composer repositories with package information
+Updating dependencies
+Your requirements could not be resolved to an installable set of packages.
+
+  Problem 1
+    - irazasyed/telegram-bot-sdk[v3.4.0, ..., v3.4.1] require guzzlehttp/psr7 ^1.3 -> found guzzlehttp/psr7[1.3.0, ..., 1.x-dev] but the package is fixed to 2.1.0 (lock file version) by a partial update and that version does not match. Make sure you list it as an argument for the update command.
+    - Root composer.json requires irazasyed/telegram-bot-sdk ^3.4 -> satisfiable by irazasyed/telegram-bot-sdk[v3.4.0, v3.4.1].
+
+Use the option --with-all-dependencies (-W) to allow upgrades, downgrades and removals for packages currently locked to specific versions.
+
+Installation failed, reverting ./composer.json and ./composer.lock to their original content.
