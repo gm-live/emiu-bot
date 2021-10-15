@@ -8,64 +8,27 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Exception\TelegramException;
+use Hyperf\Di\Annotation\Inject;
+use App\Services\BotService;
 
 
 class BotController extends AbstractController
 {
+    /**
+     * @Inject
+     * @var BotService
+     */
+    protected $oBotService;
 
     public function init()
     {
-        $aAllowedUpdateTypes = [
-            Update::TYPE_MESSAGE,
-        ];
-
-        try {
-            
-            $sHookUrl = env('WEBHOOK_URL') . '/bot';
-
-            // Create Telegram API object 
-            $oTelegram = new Telegram(env('BOT_TOKEN', ''), env('BOT_USERNAME'));
-
-            // Set webhook
-            $result = $oTelegram->setWebhook($sHookUrl, ['allowed_updates' => $aAllowedUpdateTypes]);
-            if ($result->isOk()) {
-                $result->getDescription();
-            }
-
-            // set handle
-            $oTelegram->handle();
-
-        } catch (TelegramException $e) {
-            echo $e->getMessage();
-        }
-
+        $this->oBotService->init();
         return 'success';
     }
 
-
     public function handleMsg()
     {
-        $oTelegram = new Telegram(env('BOT_TOKEN', ''), env('BOT_USERNAME'));
-
-        Request::initialize($oTelegram);
-
         $aParams = $this->request->all();
-        $iChatId = $aParams['message']['chat']['id'] ?? null;
-        $sText   = $aParams['message']['text'] ?? '';
-
-        if ($sText == 'emiu') {
-            Request::sendMessage([
-                'chat_id' => $iChatId,
-                'text'    => '不要吵！',
-            ]);
-        }
-
-        if (strtolower($sText) == 'hey emiu') {
-            Request::sendMessage([
-                'chat_id' => $iChatId,
-                'text'    => 'Hi!',
-            ]);
-        }
-
+        $this->oBotService->handleMsg($aParams);
     }
 }
