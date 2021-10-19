@@ -13,10 +13,13 @@ use Longman\TelegramBot\Telegram;
 class BotService extends BaseService
 {
     const EMIU_USER_ID = 1382889010;
-    const PIPI_USER_ID = 1330462756;
+    const PAIPAI_USER_ID = 1330462756;
 
     // 被tag時 發的貼圖
     const STICKER_IN_TAG = "CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE";
+
+    // 賭局開始
+    const BET_BEGIN = '賭骰子';
 
     /**
      * @Inject
@@ -30,6 +33,11 @@ class BotService extends BaseService
     {
         $this->oTelegram = new Telegram(config('bot.token'), config('bot.username'));
         Request::initialize($this->oTelegram);
+    }
+
+    public function getDiceRedisKey($iChatId)
+    {
+        return sprintf(config('bot.dice_redis_key'), $iChatId);
     }
 
     public function getTagUserString($iUserId, $sTagString)
@@ -128,6 +136,12 @@ class BotService extends BaseService
         // 被tag時
         $this->handleTagMe($iChatId, $sText);
 
+        // dice game start
+        $this->handleDiceStart($aMessage);
+
+        // dice game result
+        $this->handleDiceResult($aMessage);
+
     }
 
     public function handleTagMe($iChatId, $sText): void
@@ -183,5 +197,63 @@ class BotService extends BaseService
             ]);
         }
     }
+
+    public function handleDiceStart($aMessage): void
+    {
+        $sText = $aMessage['text'] ?? '';
+        if ($sText != self::BET_BEGIN) {
+            return;
+        }
+
+        $iMessageId = $aMessage['message_id'];
+        $iUserId  = $aMessage['from']['id'];
+        $iChatId  = $aMessage['chat']['id'];
+
+        $oResult = Request::sendDice([
+            'chat_id' => $iChatId,
+            'reply_to_message_id' => $iMessageId,
+        ]);
+
+        if (! $oResult->ok) {
+            $this->oStdLogger->error(json_encode($oResult));
+            return;
+        } 
+
+        $iDiceValue = $oResult->result->dice['value'];
+        $sKey = $this->getDiceRedisKey($iChatId);
+        $this->oRedis->setex($sKey, 180, $iDiceValue);
+    }
+
+    public function handleDiceResult($aMessage): void
+    {        
+        if (empty($aMessage['dice'])) {
+            return;
+        }
+
+        $iChatId = $aMessage['chat']['id'];
+        $sKey = $this->getDiceRedisKey($iChatId);
+        $iDiceValue = $this->oRedis->get($sKey);
+        if (! $iDiceValue) {
+            return;
+        }
+
+        $iMessageId = $aMessage['message_id'];
+        $iUserId  = $aMessage['from']['id'];
+        $iUserDiceValue = $aMessage['dice']['value'];
+
+        $sResText = match(true) {
+            $iDiceValue > $iUserDiceValue  => '廢物!',
+            $iDiceValue == $iUserDiceValue => '你沒贏別囂張',
+            $iDiceValue < $iUserDiceValue  => '你只是贏了Emiu',
+        };
+
+        Request::sendMessage([
+            'text' => $sResText,
+            'chat_id' => $iChatId,
+            'reply_to_message_id' => $iMessageId,
+        ]);
+        
+    }
+
 
 }
