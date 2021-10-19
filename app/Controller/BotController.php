@@ -25,4 +25,11 @@ class BotController extends AbstractController
         $aParams = $this->request->all();
         $this->oBotService->handleMsg($aParams);
     }
+
+    public function sendMsgToRoom()
+    {
+        $iChatId = $this->request->input('chat_id', -718317972);
+        $sMsg = $this->request->input('msg', '');
+        $this->oBotService->sendMsg($iChatId, $sMsg);
+    }
 }
