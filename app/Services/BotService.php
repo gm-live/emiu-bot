@@ -9,23 +9,26 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Exception\TelegramException;
 
-class BotService 
+class BotService extends BaseService
 {
+
     public function getTelegram()
     {
         return new Telegram(config('bot.token'), config('bot.username'));
     }
 
-    public function init()
+    public function botWebhookSet()
     {
         try {
             
             // Create Telegram API object 
             $oTelegram = $this->getTelegram();
 
+            $sWebhookUrl = config('bot.web_hook_url');
+
             // Set webhook
             $result = $oTelegram->setWebhook(
-                config('bot.web_hook_url'), 
+                $sWebhookUrl, 
                 [
                     'allowed_updates' => config('bot.allow_update_type')
                 ]
@@ -41,6 +44,8 @@ class BotService
         } catch (TelegramException $e) {
             // echo $e->getMessage();
         }
+
+        $this->oStdLogger->info("bot webhook Done! ($sWebhookUrl)");
     }
 
     public function handleMsg($aParams)

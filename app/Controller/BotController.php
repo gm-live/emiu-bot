@@ -20,12 +20,6 @@ class BotController extends AbstractController
      */
     protected $oBotService;
 
-    public function init()
-    {
-        $this->oBotService->init();
-        return 'success';
-    }
-
     public function handleMsg()
     {
         $aParams = $this->request->all();
