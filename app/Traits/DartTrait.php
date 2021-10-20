@@ -8,7 +8,7 @@ use Longman\TelegramBot\Request;
 
 trait DartTrait
 {
-	// 十八啦開始
+	// 射飛鏢開始
     protected $sDartBegin = '射飛鏢';
 
     public function getDartRedisKey($iChatId)
