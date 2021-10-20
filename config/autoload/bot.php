@@ -20,8 +20,14 @@ return [
 
     'be_tagged_sticker' => 'CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE',
 
-    'raw_messages_redis_key' => 'raw_messages',
 
-    'dice_redis_key' => 'dice_game:%s',
-
+    // 機器人已啟用的處理訊息方法
+    'enable_handlers' => [     
+        'handleQueryChatId', // 查詢chatID
+        'handleInChatRoom', // 入群訊息處理
+        'handleOutChatRoom', // 被踢處理
+        'handleTagMe', // 被tag時
+        'handleDiceStart', // dice game start
+        'handleDiceResult', // dice game result
+    ],
 ];

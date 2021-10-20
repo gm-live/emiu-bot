@@ -13,7 +13,7 @@ trait DiceTrait
 
     public function getDiceRedisKey($iChatId)
     {
-        return sprintf(config('bot.dice_redis_key'), $iChatId);
+        return sprintf(config('redisKeys.dice_redis_key'), $iChatId);
     }
 
 	public function handleDiceStart($aMessage): void

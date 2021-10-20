@@ -17,7 +17,7 @@ class BotService extends BaseService
     use \App\Traits\TrashTalkTrait;
     use \App\Traits\QueryTrait;
 
-    const EMIU_USER_ID = 1382889010;
+    const EMIU_USER_ID   = 1382889010;
     const PAIPAI_USER_ID = 1330462756;
 
     /**
@@ -67,7 +67,7 @@ class BotService extends BaseService
         if (!is_string($mMsg)) {
             $mMsg = json_encode($mMsg, JSON_UNESCAPED_UNICODE);
         }
-        $sKey = config('bot.raw_messages_redis_key');
+        $sKey = config('redisKeys.raw_messages_redis_key');
         $this->oRedis->lpush($sKey, $mMsg);
     }
 
@@ -100,34 +100,17 @@ class BotService extends BaseService
     {
         // 紀錄 raw msg
         $this->logRawMsg($aParams);
-
-        $iBotId   = $this->getBotId();
         $aMessage = $aParams['message'] ?? [];
-        $iChatId  = $aMessage['chat']['id'];
-        $sText    = $aMessage['text'] ?? '';
-
-        // 查詢chatID
-        $this->handleQueryChatId($iChatId, $sText);
-
-        // 入群訊息處理
-        $this->handleInChatRoom($aMessage);
-
-        // 被踢處理
-        $this->handleOutChatRoom($aMessage);
-
-        // 被tag時
-        $this->handleTagMe($iChatId, $sText);
-
-        // dice game start
-        $this->handleDiceStart($aMessage);
-
-        // dice game result
-        $this->handleDiceResult($aMessage);
-
+        $aEnableHandlers = config('bot.enable_handlers');
+        foreach ($aEnableHandlers as $sHandle) {
+            $this->$sHandle($aMessage);
+        }
     }
 
-    public function handleTagMe($iChatId, $sText): void
+    public function handleTagMe($aMessage): void
     {
+        $iChatId = $aMessage['chat']['id'];
+        $sText   = $aMessage['text'] ?? '';
         if (strpos($sText, '@' . config('bot.username')) === false) {
             return;
         }

@@ -8,8 +8,11 @@ use Longman\TelegramBot\Request;
 
 trait QueryTrait
 {
-	public function handleQueryChatId($iChatId, $sText): void
+	public function handleQueryChatId($aMessage): void
     {
+    	$iChatId  = $aMessage['chat']['id'];
+        $sText    = $aMessage['text'] ?? '';
+        
         if ($sText == 'chatid') {
             Request::sendMessage([
                 'chat_id' => $iChatId,
