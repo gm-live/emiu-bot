@@ -31,5 +31,7 @@ return [
         'handleDiceResult', // dice game result
         'handleDartStart', // dart game start
         'handleDartResult', // dart game result
+
+        'beefNoodle',
     ],
 ];
