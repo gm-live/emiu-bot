@@ -18,8 +18,8 @@ class BotService extends BaseService
     // 被tag時 發的貼圖
     const STICKER_IN_TAG = "CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE";
 
-    // 賭局開始
-    const BET_BEGIN = '賭骰子';
+    // 十八啦 開始
+    const BET_BEGIN = '十八啦';
 
     /**
      * @Inject
@@ -185,7 +185,7 @@ class BotService extends BaseService
         }
 
         $iKickerUserId = $aMessage['from']['id'];
-        $this->sendMsg($iKickerUserId, '踢屁！');
+        $this->sendMsg($iKickerUserId, '踢屁！渣男！');
     }
 
     public function handleQueryChatId($iChatId, $sText): void
@@ -241,16 +241,19 @@ class BotService extends BaseService
         $iUserId  = $aMessage['from']['id'];
         $iUserDiceValue = $aMessage['dice']['value'];
 
+        $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
+
         $sResText = match(true) {
-            $iDiceValue > $iUserDiceValue  => '廢物!',
-            $iDiceValue == $iUserDiceValue => '你沒贏別囂張',
-            $iDiceValue < $iUserDiceValue  => '你只是贏了Emiu',
+            $iDiceValue > $iUserDiceValue  => '廢物\!',
+            $iDiceValue == $iUserDiceValue => '你還是沒贏，快認輸吧\！',
+            $iDiceValue < $iUserDiceValue  => $sTagString . ' 你輸了\!',
         };
 
         Request::sendMessage([
             'text' => $sResText,
             'chat_id' => $iChatId,
             'reply_to_message_id' => $iMessageId,
+            'parse_mode' => 'MarkdownV2',
         ]);
         
     }

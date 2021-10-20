@@ -20,4 +20,6 @@ return [
 
     'raw_messages_redis_key' => 'raw_messages',
 
+    'dice_redis_key' => 'dice_game:%s',
+
 ];
