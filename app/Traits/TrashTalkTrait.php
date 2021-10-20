@@ -13,7 +13,10 @@ trait TrashTalkTrait
 	{
 		$iChatId = $aMessage['chat']['id'];
         $sText   = $aMessage['text'] ?? '';
-		if (strpos($sText, 'www.ubereats.com') === false) {
+		if (
+			strpos($sText, 'www.ubereats.com') === false &&
+			strpos($sText, 'eats.uber.com') === false
+		) {
             return;
         }
 
