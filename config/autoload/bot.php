@@ -29,5 +29,7 @@ return [
         'handleTagMe', // 被tag時
         'handleDiceStart', // dice game start
         'handleDiceResult', // dice game result
+        'handleDartStart', // dart game start
+        'handleDartResult', // dart game result
     ],
 ];

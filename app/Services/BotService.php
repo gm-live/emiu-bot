@@ -12,10 +12,11 @@ use Longman\TelegramBot\Telegram;
 
 class BotService extends BaseService
 {
-    use \App\Traits\DiceTrait;
     use \App\Traits\InOutChatRoomTrait;
     use \App\Traits\TrashTalkTrait;
     use \App\Traits\QueryTrait;
+    use \App\Traits\DiceTrait;
+    use \App\Traits\DartTrait;
 
     const EMIU_USER_ID   = 1382889010;
     const PAIPAI_USER_ID = 1330462756;

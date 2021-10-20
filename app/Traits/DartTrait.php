@@ -6,20 +6,20 @@ namespace App\Traits;
 
 use Longman\TelegramBot\Request;
 
-trait DiceTrait
+trait DartTrait
 {
 	// 十八啦開始
-    protected $sDiceBegin = '十八啦';
+    protected $sDartBegin = '射飛鏢';
 
-    public function getDiceRedisKey($iChatId)
+    public function getDartRedisKey($iChatId)
     {
-        return sprintf(config('redisKeys.dice_redis_key'), $iChatId);
+        return sprintf(config('redisKeys.dart_redis_key'), $iChatId);
     }
 
-	public function handleDiceStart($aMessage): void
+	public function handleDartStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if ($sText != $this->sDiceBegin) {
+        if ($sText != $this->sDartBegin) {
             return;
         }
 
@@ -30,6 +30,7 @@ trait DiceTrait
         $oResult = Request::sendDice([
             'chat_id' => $iChatId,
             'reply_to_message_id' => $iMessageId,
+            'emoji' => '🎯',
         ]);
 
         if (! $oResult->ok) {
@@ -37,34 +38,33 @@ trait DiceTrait
             return;
         } 
 
-        $iDiceValue = $oResult->result->dice['value'];
-        $sKey = $this->getDiceRedisKey($iChatId);
-        $this->oRedis->setex($sKey, 180, $iDiceValue);
+        $iDartValue = $oResult->result->dice['value'];
+        $sKey = $this->getDartRedisKey($iChatId);
+        $this->oRedis->setex($sKey, 180, $iDartValue);
     }
 
-    public function handleDiceResult($aMessage): void
+    public function handleDartResult($aMessage): void
     {        
-        if (empty($aMessage['dice']['emoji']) || $aMessage['dice']['emoji'] != '🎲') {
+        if (empty($aMessage['dice']['emoji']) || $aMessage['dice']['emoji'] != '🎯') {
             return;
         }
 
         $iChatId = $aMessage['chat']['id'];
-        $sKey = $this->getDiceRedisKey($iChatId);
-        $iDiceValue = $this->oRedis->get($sKey);
-        if (! $iDiceValue) {
+        $sKey = $this->getDartRedisKey($iChatId);
+        $iDartValue = $this->oRedis->get($sKey);
+        if (! $iDartValue) {
             return;
         }
 
         $iMessageId = $aMessage['message_id'];
         $iUserId  = $aMessage['from']['id'];
-        $iUserDiceValue = $aMessage['dice']['value'];
-
+        $iUserDartValue = $aMessage['dice']['value'];
         $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
 
         $sResText = match(true) {
-            $iDiceValue > $iUserDiceValue  => '廢物\!',
-            $iDiceValue == $iUserDiceValue => '你還是沒贏，快認輸吧\!',
-            $iDiceValue < $iUserDiceValue  => $sTagString . ' 你又輸了\!',
+            $iDartValue > $iUserDartValue  => '廢物\! 射都射不准\!',
+            $iDartValue == $iUserDartValue => '你還是沒贏，快認輸吧\!',
+            $iDartValue < $iUserDartValue  => $sTagString . ' 你又輸了\!',
         };
 
         Request::sendMessage([
