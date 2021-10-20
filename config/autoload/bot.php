@@ -18,6 +18,8 @@ return [
         // ],
     ],
 
+    'be_tagged_sticker' => 'CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE',
+
     'raw_messages_redis_key' => 'raw_messages',
 
     'dice_redis_key' => 'dice_game:%s',

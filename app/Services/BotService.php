@@ -12,14 +12,13 @@ use Longman\TelegramBot\Telegram;
 
 class BotService extends BaseService
 {
+    use \App\Traits\DiceTrait;
+    use \App\Traits\InOutChatRoomTrait;
+    use \App\Traits\TrashTalkTrait;
+    use \App\Traits\QueryTrait;
+
     const EMIU_USER_ID = 1382889010;
     const PAIPAI_USER_ID = 1330462756;
-
-    // 被tag時 發的貼圖
-    const STICKER_IN_TAG = "CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE";
-
-    // 十八啦 開始
-    const BET_BEGIN = '十八啦';
 
     /**
      * @Inject
@@ -35,23 +34,9 @@ class BotService extends BaseService
         Request::initialize($this->oTelegram);
     }
 
-    public function getDiceRedisKey($iChatId)
-    {
-        return sprintf(config('bot.dice_redis_key'), $iChatId);
-    }
-
     public function getTagUserString($iUserId, $sTagString)
     {
         return "[{$sTagString}](tg://user?id={$iUserId})";
-    }
-
-    public function tagUser($iChatId, $iUserId, $sTagString)
-    {
-        Request::sendMessage([
-            'chat_id'    => $iChatId,
-            'text'       => $this->getTagUserString($iUserId, $sTagString),
-            'parse_mode' => 'MarkdownV2',
-        ]);
     }
 
     public function sendMsg($iChatId, $sMsg)
@@ -86,10 +71,9 @@ class BotService extends BaseService
         $this->oRedis->lpush($sKey, $mMsg);
     }
 
-    public function botWebhookSet()
+    public function setBotWebhook()
     {
         try {
-
             $sWebhookUrl = config('bot.webhook_url');
 
             // Set webhook
@@ -105,9 +89,7 @@ class BotService extends BaseService
             // set handle
             $this->oTelegram->handle();
 
-        } catch (TelegramException $e) {
-            // echo $e->getMessage();
-        }
+        } catch (TelegramException $e) {}
 
         $iBotId = $this->getBotId();
         $this->oStdLogger->info("bot webhook Done! ($sWebhookUrl)");
@@ -149,114 +131,7 @@ class BotService extends BaseService
         if (strpos($sText, '@' . config('bot.username')) === false) {
             return;
         }
-
-        $this->sendSticker($iChatId, self::STICKER_IN_TAG);
+        $this->sendSticker($iChatId, config('bot.be_tagged_sticker'));
     }
-
-    public function handleInChatRoom($aMessage): void
-    {
-        $aNewMembers = $aMessage['new_chat_members'] ?? [];
-        if (empty($aNewMembers)) {
-            return;
-        }
-
-        $iChatId = $aMessage['chat']['id'];
-        $iBotId  = $this->getBotId();
-        foreach ($aNewMembers as $aUser) {
-            if ($iBotId == $aUser['id']) {
-                continue;
-            }
-
-            $sTagUser = $this->getTagUserString($aUser['id'], $aUser['first_name']);
-            $this->sendMsg($iChatId, "歡迎 {$sTagUser} \!\!");
-        }
-    }
-
-    public function handleOutChatRoom($aMessage): void
-    {
-        if (empty($aMessage['left_chat_participant'])) {
-            return;
-        }
-
-        $iBotId      = $this->getBotId();
-        $iLeftUserId = $aMessage['left_chat_participant']['id'];
-        if ($iLeftUserId != $iBotId) {
-            return;
-        }
-
-        $iKickerUserId = $aMessage['from']['id'];
-        $this->sendMsg($iKickerUserId, '踢屁！渣男！');
-    }
-
-    public function handleQueryChatId($iChatId, $sText): void
-    {
-        if ($sText == 'chatid') {
-            Request::sendMessage([
-                'chat_id' => $iChatId,
-                'text'    => $iChatId,
-            ]);
-        }
-    }
-
-    public function handleDiceStart($aMessage): void
-    {
-        $sText = $aMessage['text'] ?? '';
-        if ($sText != self::BET_BEGIN) {
-            return;
-        }
-
-        $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
-        $iChatId  = $aMessage['chat']['id'];
-
-        $oResult = Request::sendDice([
-            'chat_id' => $iChatId,
-            'reply_to_message_id' => $iMessageId,
-        ]);
-
-        if (! $oResult->ok) {
-            $this->oStdLogger->error(json_encode($oResult));
-            return;
-        } 
-
-        $iDiceValue = $oResult->result->dice['value'];
-        $sKey = $this->getDiceRedisKey($iChatId);
-        $this->oRedis->setex($sKey, 180, $iDiceValue);
-    }
-
-    public function handleDiceResult($aMessage): void
-    {        
-        if (empty($aMessage['dice'])) {
-            return;
-        }
-
-        $iChatId = $aMessage['chat']['id'];
-        $sKey = $this->getDiceRedisKey($iChatId);
-        $iDiceValue = $this->oRedis->get($sKey);
-        if (! $iDiceValue) {
-            return;
-        }
-
-        $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
-        $iUserDiceValue = $aMessage['dice']['value'];
-
-        $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
-
-        $sResText = match(true) {
-            $iDiceValue > $iUserDiceValue  => '廢物\!',
-            $iDiceValue == $iUserDiceValue => '你還是沒贏，快認輸吧\！',
-            $iDiceValue < $iUserDiceValue  => $sTagString . ' 你輸了\!',
-        };
-
-        Request::sendMessage([
-            'text' => $sResText,
-            'chat_id' => $iChatId,
-            'reply_to_message_id' => $iMessageId,
-            'parse_mode' => 'MarkdownV2',
-        ]);
-        
-    }
-
 
 }

@@ -17,7 +17,7 @@ class OnManagerStartListener
 
     public function handle()
     {
-        $this->oBotService->botWebhookSet();
+        $this->oBotService->setBotWebhook();
     }
 
 }
