@@ -14,6 +14,7 @@ class BotService extends BaseService
 {
     use \App\Traits\InOutChatRoomTrait;
     use \App\Traits\TrashTalkTrait;
+    use \App\Traits\NormalTalkTrait;
     use \App\Traits\QueryTrait;
     use \App\Traits\DiceTrait;
     use \App\Traits\DartTrait;
