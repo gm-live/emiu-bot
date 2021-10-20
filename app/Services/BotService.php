@@ -19,7 +19,6 @@ class BotService extends BaseService
     use \App\Traits\DartTrait;
 
     const EMIU_USER_ID   = 1382889010;
-    const PAIPAI_USER_ID = 1330462756;
 
     /**
      * @Inject
@@ -49,12 +48,18 @@ class BotService extends BaseService
         ]);
     }
 
-    public function sendSticker($iChatId, $sStickerFileId)
+    public function sendSticker($iChatId, $sStickerFileId, $iReplyMsgId = null)
     {
-        Request::sendSticker([
+        $aParams = [
             'chat_id' => $iChatId,
             'sticker' => $sStickerFileId,
-        ]);
+        ];
+
+        if ($iReplyMsgId) {
+            $aParams['reply_to_message_id'] = $iReplyMsgId;
+        }
+        
+        Request::sendSticker($aParams);
     }
 
     public function getBotId()

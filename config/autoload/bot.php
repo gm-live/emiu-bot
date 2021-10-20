@@ -32,6 +32,8 @@ return [
         'handleDartStart', // dart game start
         'handleDartResult', // dart game result
 
+        // trash talk
         'beefNoodle',
+        'paipai',
     ],
 ];
