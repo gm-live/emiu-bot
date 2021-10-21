@@ -64,7 +64,7 @@ trait DiceTrait
         $sResText = match(true) {
             $iDiceValue > $iUserDiceValue  => '廢物\!',
             $iDiceValue == $iUserDiceValue => '你還是沒贏，快認輸吧\!',
-            $iDiceValue < $iUserDiceValue  => $sTagString . ' 你又輸了\!',
+            $iDiceValue < $iUserDiceValue  => $sTagString . '又輸了\!',
         };
 
         Request::sendMessage([

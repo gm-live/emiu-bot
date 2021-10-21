@@ -8,7 +8,6 @@ use Longman\TelegramBot\Request;
 
 trait TrashTalkTrait
 {
-	public $sPaipaiUserId = 1330462756;
 
 	public function beefNoodle($aMessage): void
 	{
@@ -30,8 +29,8 @@ trait TrashTalkTrait
 	{
         $iMessageId = $aMessage['message_id'];
         $iUserId  = $aMessage['from']['id'];
-
-        if ($iUserId != $this->sPaipaiUserId) {
+        
+        if ($iUserId != self::PAIPAI_USER_ID) {
         	return;
         }
 
@@ -47,6 +46,10 @@ trait TrashTalkTrait
         	'CAACAgUAAxkBAAICGWFv9Z-duPPt6P4wEx50avKwH5L4AAICAAORWGIqT2SuySGu6v8hBA',
             $iMessageId,
         );
+
+        $sTagString = $this->getTagUserString(self::PAIPAI_USER_ID, '派派哥');
+        $sMsg = $sTagString . '！ 甘蔗！';
+        $this->sendMsg($iChatId, $sMsg, $iMessageId);
 	}
 
 }

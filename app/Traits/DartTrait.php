@@ -64,7 +64,7 @@ trait DartTrait
         $sResText = match(true) {
             $iDartValue > $iUserDartValue  => '廢物\! 射都射不准\!',
             $iDartValue == $iUserDartValue => '你還是沒贏，快認輸吧\!',
-            $iDartValue < $iUserDartValue  => $sTagString . ' 你又輸了\!',
+            $iDartValue < $iUserDartValue  => $sTagString . '又輸了\!',
         };
 
         Request::sendMessage([
