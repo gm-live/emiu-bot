@@ -20,6 +20,10 @@ return [
 
     // 機器人已啟用的處理訊息方法
     'enable_handlers'   => [
+
+        'saveUserByMsg', // 存用戶資料
+        'saveRoomsByMsg', // 存房間資料
+
         'handleQueryChatId', // 查詢chatID
         'handleInChatRoom', // 入群訊息處理
         'handleOutChatRoom', // 被踢處理

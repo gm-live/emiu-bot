@@ -4,6 +4,8 @@ declare (strict_types = 1);
 
 namespace App\Services;
 
+use App\Repositories\RoomRepo;
+use App\Repositories\UserRepo;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\Redis;
 use Longman\TelegramBot\Exception\TelegramException;
@@ -12,7 +14,6 @@ use Longman\TelegramBot\Telegram;
 
 class BotService extends BaseService
 {
-    use \App\Traits\botSaveTrait;
     use \App\Traits\InOutChatRoomTrait;
     use \App\Traits\TrashTalkTrait;
     use \App\Traits\NormalTalkTrait;
@@ -28,6 +29,18 @@ class BotService extends BaseService
      * @var Redis
      */
     protected $oRedis;
+
+    /**
+     * @Inject
+     * @var UserRepo
+     */
+    protected $oUserRepo;
+
+    /**
+     * @Inject
+     * @var RoomRepo
+     */
+    protected $oRoomRepo;
 
     protected $oTelegram = null;
 
@@ -67,7 +80,7 @@ class BotService extends BaseService
         if ($iReplyMsgId) {
             $aParams['reply_to_message_id'] = $iReplyMsgId;
         }
-        
+
         Request::sendSticker($aParams);
     }
 
@@ -102,20 +115,13 @@ class BotService extends BaseService
     {
         // save raw msg
         $this->saveRawMsg($aParams);
-        
         $aMessage = $aParams['message'] ?? [];
-
-        // save users
-        $this->saveUserByMsg($aMessage);
-
-        // save rooms
-        $this->saveRoomsByMsg($aMessage);
 
         // enable handler
         $aEnableHandlers = config('bot.enable_handlers');
         foreach ($aEnableHandlers as $sHandle) {
-            go(function() use ($sHandle, $aMessage){
-                $this->$sHandle($aMessage);                
+            go(function () use ($sHandle, $aMessage) {
+                $this->$sHandle($aMessage);
             });
         }
     }
@@ -128,6 +134,57 @@ class BotService extends BaseService
             return;
         }
         $this->sendSticker($iChatId, config('bot.be_tagged_sticker'));
+    }
+
+    public function saveRawMsg($aRequestParams)
+    {
+        $aRequestParams = json_encode($aRequestParams, JSON_UNESCAPED_UNICODE);
+        $sKey           = config('redisKeys.raw_messages_redis_key');
+        $this->oRedis->lpush($sKey, $aRequestParams);
+    }
+
+    public function saveUserByMsg($aMessage)
+    {
+        $iUserId = $aMessage['from']['id'];
+
+        $bCheck = $this->oUserRepo->checkUserExist($iUserId);
+        $sKey = config('redisKeys.user_repeat_check');
+        if ($bCheck) {
+            $this->oRedis->hset($sKey, (string)$iUserId, 1);
+            return;
+        }
+
+        $sFirstName = $aMessage['from']['first_name'];
+        $sLastName  = $aMessage['from']['last_name'] ?? '';
+        $sUsername  = $aMessage['from']['username'] ?? null;
+        $sLang      = $aMessage['from']['language_code'];
+        $this->oUserRepo->create(
+            $iUserId,
+            $sFirstName,
+            $sLastName,
+            $sUsername,
+            $sLang
+        );
+        $this->oRedis->hset($sKey, (string)$iUserId, 1);
+    }
+
+    public function saveRoomsByMsg($aMessage)
+    {
+        $iChatId   = $aMessage['chat']['id'];
+        if ($iChatId > 0) {
+            return;
+        }
+        
+        $bCheck = $this->oRoomRepo->checkRoomExist($iChatId);
+        $sKey = config('redisKeys.room_repeat_check');
+        if ($bCheck) {
+            $this->oRedis->hset($sKey, (string)$iChatId, 1);
+            return;
+        }
+
+        $sChatName = $aMessage['chat']['title'] ?? '';
+        $this->oRoomRepo->create($iChatId, $sChatName);
+        $this->oRedis->hset($sKey, (string)$iChatId, 1);
     }
 
 }
