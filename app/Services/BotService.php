@@ -117,7 +117,9 @@ class BotService extends BaseService
         $aMessage = $aParams['message'] ?? [];
         $aEnableHandlers = config('bot.enable_handlers');
         foreach ($aEnableHandlers as $sHandle) {
-            $this->$sHandle($aMessage);
+            go(function() use ($sHandle, $aMessage){
+                $this->$sHandle($aMessage);                
+            });
         }
     }
 
