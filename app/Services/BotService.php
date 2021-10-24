@@ -7,10 +7,7 @@ namespace App\Services;
 use App\Repositories\RoomRepo;
 use App\Repositories\UserRepo;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Redis\Redis;
 use Longman\TelegramBot\Exception\TelegramException;
-use Longman\TelegramBot\Request;
-use Longman\TelegramBot\Telegram;
 
 class BotService extends BaseService
 {
@@ -26,12 +23,6 @@ class BotService extends BaseService
 
     /**
      * @Inject
-     * @var Redis
-     */
-    protected $oRedis;
-
-    /**
-     * @Inject
      * @var UserRepo
      */
     protected $oUserRepo;
@@ -41,14 +32,6 @@ class BotService extends BaseService
      * @var RoomRepo
      */
     protected $oRoomRepo;
-
-    protected $oTelegram = null;
-
-    public function __construct()
-    {
-        $this->oTelegram = new Telegram(config('bot.token'), config('bot.username'));
-        Request::initialize($this->oTelegram);
-    }
 
     public function getTagUserString($iUserId, $sTagString)
     {
@@ -67,7 +50,7 @@ class BotService extends BaseService
             $aParams['reply_to_message_id'] = $iReplyMsgId;
         }
 
-        Request::sendMessage($aParams);
+        $this->oTgRequest::sendMessage($aParams);
     }
 
     public function sendSticker($iChatId, $sStickerFileId, $iReplyMsgId = null)
@@ -81,13 +64,7 @@ class BotService extends BaseService
             $aParams['reply_to_message_id'] = $iReplyMsgId;
         }
 
-        Request::sendSticker($aParams);
-    }
-
-    public function getBotId()
-    {
-        $sToken = config('bot.token');
-        return explode(':', $sToken)[0] ?? '';
+        $this->oTgRequest::sendSticker($aParams);
     }
 
     public function setBotWebhook()

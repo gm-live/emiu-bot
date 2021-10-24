@@ -4,8 +4,6 @@ declare (strict_types = 1);
 
 namespace App\Traits;
 
-use Longman\TelegramBot\Request;
-
 trait DartTrait
 {
 	// 射飛鏢開始
@@ -27,7 +25,7 @@ trait DartTrait
         $iUserId  = $aMessage['from']['id'];
         $iChatId  = $aMessage['chat']['id'];
 
-        $oResult = Request::sendDice([
+        $oResult = $this->oTgRequest::sendDice([
             'chat_id' => $iChatId,
             'reply_to_message_id' => $iMessageId,
             'emoji' => '🎯',
@@ -67,7 +65,7 @@ trait DartTrait
             $iDartValue < $iUserDartValue  => $sTagString . '又輸了\!',
         };
 
-        Request::sendMessage([
+        $this->oTgRequest::sendMessage([
             'text' => $sResText,
             'chat_id' => $iChatId,
             'reply_to_message_id' => $iMessageId,

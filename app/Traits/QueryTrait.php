@@ -14,10 +14,7 @@ trait QueryTrait
         $sText    = $aMessage['text'] ?? '';
         
         if ($sText == 'chatid') {
-            Request::sendMessage([
-                'chat_id' => $iChatId,
-                'text'    => $iChatId,
-            ]);
+            $this->sendMsg($iChatId, $iChatId);            
         }
     }
 
