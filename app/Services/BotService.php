@@ -12,6 +12,7 @@ use Longman\TelegramBot\Telegram;
 
 class BotService extends BaseService
 {
+    use \App\Traits\botSaveTrait;
     use \App\Traits\InOutChatRoomTrait;
     use \App\Traits\TrashTalkTrait;
     use \App\Traits\NormalTalkTrait;
@@ -76,15 +77,6 @@ class BotService extends BaseService
         return explode(':', $sToken)[0] ?? '';
     }
 
-    public function logRawMsg($mMsg)
-    {
-        if (!is_string($mMsg)) {
-            $mMsg = json_encode($mMsg, JSON_UNESCAPED_UNICODE);
-        }
-        $sKey = config('redisKeys.raw_messages_redis_key');
-        $this->oRedis->lpush($sKey, $mMsg);
-    }
-
     public function setBotWebhook()
     {
         try {
@@ -95,10 +87,6 @@ class BotService extends BaseService
                 $sWebhookUrl,
                 config('bot.webhook_option')
             );
-
-            if ($result->isOk()) {
-                $result->getDescription();
-            }
 
             // set handle
             $this->oTelegram->handle();
@@ -112,9 +100,18 @@ class BotService extends BaseService
 
     public function handleMsg($aParams)
     {
-        // 紀錄 raw msg
-        $this->logRawMsg($aParams);
+        // save raw msg
+        $this->saveRawMsg($aParams);
+        
         $aMessage = $aParams['message'] ?? [];
+
+        // save users
+        $this->saveUserByMsg($aMessage);
+
+        // save rooms
+        $this->saveRoomsByMsg($aMessage);
+
+        // enable handler
         $aEnableHandlers = config('bot.enable_handlers');
         foreach ($aEnableHandlers as $sHandle) {
             go(function() use ($sHandle, $aMessage){
