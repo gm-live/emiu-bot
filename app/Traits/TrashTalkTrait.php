@@ -9,8 +9,9 @@ trait TrashTalkTrait
 
 	public function beefNoodle($aMessage): void
 	{
-		$iChatId = $aMessage['chat']['id'];
-        $sText   = $aMessage['text'] ?? '';
+		$iChatId    = $aMessage['chat']['id'];
+        $sText      = $aMessage['text'] ?? '';
+        $iMessageId = $aMessage['message_id'];
 		if (
 			strpos($sText, 'www.ubereats.com') === false &&
 			strpos($sText, 'eats.uber.com') === false
@@ -20,7 +21,7 @@ trait TrashTalkTrait
 
         $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
         $sMsg = "{$sTagString} \!  牛肉麵吃起來\!";
-        $this->sendMsg($iChatId, $sMsg);
+        $this->sendMsg($iChatId, $sMsg, $iMessageId);
 	}
 
 	public function paipai($aMessage): void
