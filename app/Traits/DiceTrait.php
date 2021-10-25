@@ -7,7 +7,10 @@ namespace App\Traits;
 trait DiceTrait
 {
 	// 十八啦開始
-    protected $sDiceBegin = '十八啦';
+    protected $sDiceBeginKeywords = [
+        '十八啦',
+        '十八拉',
+    ];
 
     public function getDiceRedisKey($iChatId)
     {
@@ -17,7 +20,7 @@ trait DiceTrait
 	public function handleDiceStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if ($sText != $this->sDiceBegin) {
+        if (! in_array($sText, $this->sDiceBeginKeywords)) {
             return;
         }
 

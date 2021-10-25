@@ -134,7 +134,7 @@ class BotService extends BaseService
         $sFirstName = $aMessage['from']['first_name'];
         $sLastName  = $aMessage['from']['last_name'] ?? '';
         $sUsername  = $aMessage['from']['username'] ?? null;
-        $sLang      = $aMessage['from']['language_code'] ?? 'zh-hans';
+        $sLang      = $aMessage['from']['language_code'] ?? 'zh-hant';
         $this->oUserRepo->create(
             $iUserId,
             $sFirstName,
