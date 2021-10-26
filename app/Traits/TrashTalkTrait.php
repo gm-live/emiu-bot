@@ -18,8 +18,11 @@ trait TrashTalkTrait
         $sText      = $aMessage['text'] ?? '';
         $iMessageId = $aMessage['message_id'];
 		if (
-			strpos($sText, 'www.ubereats.com') === false &&
-			strpos($sText, 'eats.uber.com') === false
+			(
+                strpos($sText, 'www.ubereats.com') === false &&
+    			strpos($sText, 'eats.uber.com') === false
+            ) ||
+            strpos($sText, '牛肉麵') === false
 		) {
             return;
         }
@@ -28,6 +31,32 @@ trait TrashTalkTrait
         $sMsg = "{$sTagString} \!  牛肉麵吃起來\!";
         $this->sendMsg($iChatId, $sMsg, $iMessageId);
 	}
+
+    public function braisedPorkOnRice($aMessage): void
+    {
+        $iChatId    = $aMessage['chat']['id'];
+        $sText      = $aMessage['text'] ?? '';
+        $iMessageId = $aMessage['message_id'];
+        if (
+            (
+                strpos($sText, 'www.ubereats.com') === false &&
+                strpos($sText, 'eats.uber.com') === false
+            ) ||
+            (
+                strpos($sText, '魯肉飯') === false &&
+                strpos($sText, '小吃') === false &&
+                strpos($sText, '肉燥') === false &&
+                strpos($sText, '滷肉飯') === false &&
+                strpos($sText, '肉燥飯') === false
+            )
+        ) {
+            return;
+        }
+
+        $sTagString = $this->getTagUserString($this->iEmiuUserID, 'Emiu');
+        $sMsg = "{$sTagString} \!  魯肉飯吃起來\!";
+        $this->sendMsg($iChatId, $sMsg, $iMessageId);
+    }
 
 	public function paipai($aMessage): void
 	{
