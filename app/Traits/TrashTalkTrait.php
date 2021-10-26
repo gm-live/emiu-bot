@@ -6,6 +6,11 @@ namespace App\Traits;
 
 trait TrashTalkTrait
 {
+    protected $iEmiuUserID = 1382889010;
+    protected $iPaiPaiUserID = 1330462756;
+
+    protected $iElevenFloorChatId = -1001301971976;
+    // protected $iElevenFloorChatId = -718317972;
 
 	public function beefNoodle($aMessage): void
 	{
@@ -19,7 +24,7 @@ trait TrashTalkTrait
             return;
         }
 
-        $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
+        $sTagString = $this->getTagUserString($this->iEmiuUserID, 'Emiu');
         $sMsg = "{$sTagString} \!  牛肉麵吃起來\!";
         $this->sendMsg($iChatId, $sMsg, $iMessageId);
 	}
@@ -29,7 +34,7 @@ trait TrashTalkTrait
         $iMessageId = $aMessage['message_id'];
         $iUserId  = $aMessage['from']['id'];
         
-        if ($iUserId != self::PAIPAI_USER_ID) {
+        if ($iUserId != $this->iPaiPaiUserID) {
         	return;
         }
 
@@ -46,9 +51,16 @@ trait TrashTalkTrait
             $iMessageId,
         );
 
-        $sTagString = $this->getTagUserString(self::PAIPAI_USER_ID, '派派哥');
+        $sTagString = $this->getTagUserString($this->iPaiPaiUserID, '派派哥');
         $sMsg = $sTagString . '！ 甘蔗！';
         $this->sendMsg($iChatId, $sMsg, $iMessageId);
 	}
+
+    public function emiuGoOffWork()
+    {
+        $sTagString = $this->getTagUserString($this->iEmiuUserID, 'Emiu');
+        $sMsg = "本 {$sTagString} 要下班了\!";
+        $this->sendMsg($this->iElevenFloorChatId, $sMsg);
+    }
 
 }

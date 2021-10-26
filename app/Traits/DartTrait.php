@@ -57,12 +57,11 @@ trait DartTrait
         $iMessageId = $aMessage['message_id'];
         $iUserId  = $aMessage['from']['id'];
         $iUserDartValue = $aMessage['dice']['value'];
-        $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
 
         $sResText = match(true) {
             $iDartValue > $iUserDartValue  => '廢物\! 射都射不准\!',
             $iDartValue == $iUserDartValue => '你還是沒贏，快認輸吧\!',
-            $iDartValue < $iUserDartValue  => $sTagString . '又輸了\!',
+            $iDartValue < $iUserDartValue  => '我認輸\!',
         };
 
         $this->oTgRequest::sendMessage([

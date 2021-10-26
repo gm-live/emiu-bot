@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3dea8be93b6b713fb64497b759f8422c",
+    "content-hash": "ca22ec7536676e4d0b0ca05c603449c3",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1097,6 +1097,59 @@
                 "source": "https://github.com/hyperf/hyperf"
             },
             "time": "2021-09-08T04:11:54+00:00"
+        },
+        {
+            "name": "hyperf/crontab",
+            "version": "v2.2.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hyperf/crontab.git",
+                "reference": "d1e06f80c40027b0f2b4e1b50d7b60d0c09962ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hyperf/crontab/zipball/d1e06f80c40027b0f2b4e1b50d7b60d0c09962ca",
+                "reference": "d1e06f80c40027b0f2b4e1b50d7b60d0c09962ca",
+                "shasum": ""
+            },
+            "require": {
+                "hyperf/utils": "~2.2.0",
+                "nesbot/carbon": "^2.0",
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
+                },
+                "hyperf": {
+                    "config": "Hyperf\\Crontab\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hyperf\\Crontab\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A crontab component for Hyperf.",
+            "homepage": "https://hyperf.io",
+            "keywords": [
+                "crontab",
+                "hyperf",
+                "php",
+                "swoole"
+            ],
+            "support": {
+                "docs": "https://hyperf.wiki",
+                "issues": "https://github.com/hyperf/hyperf/issues",
+                "pull-request": "https://github.com/hyperf/hyperf/pulls",
+                "source": "https://github.com/hyperf/hyperf"
+            },
+            "time": "2021-09-26T01:52:27+00:00"
         },
         {
             "name": "hyperf/database",
@@ -7763,7 +7816,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3"
+        "php": ">=8.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"

@@ -18,9 +18,6 @@ class BotService extends BaseService
     use \App\Traits\DiceTrait;
     use \App\Traits\DartTrait;
 
-    const EMIU_USER_ID   = 1382889010;
-    const PAIPAI_USER_ID = 1330462756;
-
     /**
      * @Inject
      * @var UserRepo

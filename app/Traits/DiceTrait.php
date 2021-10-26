@@ -60,12 +60,10 @@ trait DiceTrait
         $iUserId  = $aMessage['from']['id'];
         $iUserDiceValue = $aMessage['dice']['value'];
 
-        $sTagString = $this->getTagUserString(self::EMIU_USER_ID, 'Emiu');
-
         $sResText = match(true) {
             $iDiceValue > $iUserDiceValue  => '廢物\!',
             $iDiceValue == $iUserDiceValue => '你還是沒贏，快認輸吧\!',
-            $iDiceValue < $iUserDiceValue  => $sTagString . '又輸了\!',
+            $iDiceValue < $iUserDiceValue  => '我認輸了\!',
         };
 
         $this->oTgRequest::sendMessage([
