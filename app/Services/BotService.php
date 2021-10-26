@@ -17,6 +17,7 @@ class BotService extends BaseService
     use \App\Traits\QueryTrait;
     use \App\Traits\DiceTrait;
     use \App\Traits\DartTrait;
+    use \App\Traits\BowlingTrait;
 
     /**
      * @Inject
