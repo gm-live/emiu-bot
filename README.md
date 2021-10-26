@@ -15,5 +15,6 @@ composer install
 # change bot info and webhook url in .env
 cp .env.example .env
 
+php bin/hyperf.php migrate
 php bin/hyperf.php start
 ```
