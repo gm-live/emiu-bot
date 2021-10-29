@@ -16,6 +16,8 @@ return [
         // ],
     ],
 
+    'admins' => env('BOT_ADMIN_ID', ''),
+
     'be_tagged_sticker' => 'CAACAgEAAxkBAAIBP2Fu3qFROqPwLSckIJftref8AAGEAQACRwEAAhRZkERyDIjsROmTCCEE',
 
     // 機器人已啟用的處理訊息方法

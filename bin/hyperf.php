@@ -8,6 +8,7 @@ ini_set('memory_limit', '1G');
 error_reporting(E_ALL);
 
 ! defined('BASE_PATH') && define('BASE_PATH', dirname(__DIR__, 1));
+! defined('APP_PATH') && define('APP_PATH', BASE_PATH . '/app');
 ! defined('SWOOLE_HOOK_FLAGS') && define('SWOOLE_HOOK_FLAGS', SWOOLE_HOOK_ALL);
 
 require BASE_PATH . '/vendor/autoload.php';

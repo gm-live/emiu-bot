@@ -11,10 +11,14 @@ class TelegramMaker
 {
     public function __invoke(ContainerInterface $oContainer)
     {        
-        return make(Telegram::class, [
+        $oTelegram = make(Telegram::class, [
         	'api_key' => config('bot.token'), 
         	'bot_username' => config('bot.username')
         ]);
+
+        $oTelegram->addCommandsPath(APP_PATH . '/BotCommands', false);
+
+        return $oTelegram;
     }
 
 }

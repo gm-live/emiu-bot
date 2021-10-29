@@ -47,4 +47,10 @@ class BaseService
         return explode(':', $sToken)[0] ?? '';
     }
 
+    public function getBotAdmins()
+    {
+        $sAdmins = config('bot.admins', '');
+        return array_filter(explode(',',$sAdmins)) ?? [];
+    }
+
 }

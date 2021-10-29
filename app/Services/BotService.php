@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Repositories\RoomRepo;
 use App\Repositories\UserRepo;
 use Hyperf\Di\Annotation\Inject;
-use Longman\TelegramBot\Exception\TelegramException;
+use Longman\TelegramBot\Entities\Update;
 
 class BotService extends BaseService
 {
@@ -67,19 +67,13 @@ class BotService extends BaseService
 
     public function setBotWebhook()
     {
-        try {
-            $sWebhookUrl = config('bot.webhook_url');
+        $sWebhookUrl = config('bot.webhook_url');
 
-            // Set webhook
-            $result = $this->oTelegram->setWebhook(
-                $sWebhookUrl,
-                config('bot.webhook_option')
-            );
-
-            // set handle
-            $this->oTelegram->handle();
-
-        } catch (TelegramException $e) {}
+        // Set webhook
+        $this->oTelegram->setWebhook(
+            $sWebhookUrl,
+            config('bot.webhook_option')
+        );
 
         $iBotId = $this->getBotId();
         $this->oStdLogger->info("bot webhook Done! ($sWebhookUrl)");
@@ -90,15 +84,24 @@ class BotService extends BaseService
     {
         // save raw msg
         $this->saveRawMsg($aParams);
-        $aMessage = $aParams['message'] ?? [];
+
+        // command
+        $this->handleCommand($aParams);
 
         // enable handler
+        $aMessage        = $aParams['message'] ?? [];
         $aEnableHandlers = config('bot.enable_handlers');
         foreach ($aEnableHandlers as $sHandle) {
             go(function () use ($sHandle, $aMessage) {
                 $this->$sHandle($aMessage);
             });
         }
+    }
+
+    public function handleCommand($aParams)
+    {
+        $oUpdate = new Update($aParams, config('bot.username'));
+        $this->oTelegram->processUpdate($oUpdate);
     }
 
     public function handleTagMe($aMessage): void
@@ -123,9 +126,9 @@ class BotService extends BaseService
         $iUserId = $aMessage['from']['id'];
 
         $bCheck = $this->oUserRepo->checkUserExist($iUserId);
-        $sKey = config('redisKeys.user_repeat_check');
+        $sKey   = config('redisKeys.user_repeat_check');
         if ($bCheck) {
-            $this->oRedis->hset($sKey, (string)$iUserId, 1);
+            $this->oRedis->hset($sKey, (string) $iUserId, 1);
             return;
         }
 
@@ -140,26 +143,26 @@ class BotService extends BaseService
             $sUsername,
             $sLang
         );
-        $this->oRedis->hset($sKey, (string)$iUserId, 1);
+        $this->oRedis->hset($sKey, (string) $iUserId, 1);
     }
 
     public function saveRoomsByMsg($aMessage)
     {
-        $iChatId   = $aMessage['chat']['id'];
+        $iChatId = $aMessage['chat']['id'];
         if ($iChatId > 0) {
             return;
         }
-        
+
         $bCheck = $this->oRoomRepo->checkRoomExist($iChatId);
-        $sKey = config('redisKeys.room_repeat_check');
+        $sKey   = config('redisKeys.room_repeat_check');
         if ($bCheck) {
-            $this->oRedis->hset($sKey, (string)$iChatId, 1);
+            $this->oRedis->hset($sKey, (string) $iChatId, 1);
             return;
         }
 
         $sChatName = $aMessage['chat']['title'] ?? '';
         $this->oRoomRepo->create($iChatId, $sChatName);
-        $this->oRedis->hset($sKey, (string)$iChatId, 1);
+        $this->oRedis->hset($sKey, (string) $iChatId, 1);
     }
 
 }
