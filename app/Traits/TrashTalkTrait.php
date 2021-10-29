@@ -92,4 +92,11 @@ trait TrashTalkTrait
         $this->sendMsg($this->iElevenFloorChatId, $sMsg);
     }
 
+    public function emiuOrderMeal()
+    {
+        $sTagString = $this->getTagUserString($this->iEmiuUserID, 'Emiu');
+        $sMsg = "大{$sTagString}~~ 該訂晚餐了\!";
+        $this->sendMsg($this->iElevenFloorChatId, $sMsg);
+    }
+
 }
