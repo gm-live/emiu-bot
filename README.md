@@ -1,4 +1,4 @@
-# The Real Emiu
+# The Real Emiu (Telegram Bot)
 ## Project system env
 ```
 php >= 8.0
