@@ -108,7 +108,9 @@ class BotService extends BaseService
     {
         $iChatId = $aMessage['chat']['id'];
         $sText   = $aMessage['text'] ?? '';
-        if (strpos($sText, '@' . config('bot.username')) === false) {
+        $sTypeString = $aMessage['entities'][0]['type'] ?? ''; 
+        $bTagged = 'mention' == $sTypeString;
+        if (! $bTagged) {
             return;
         }
         $this->sendSticker($iChatId, config('bot.be_tagged_sticker'));
