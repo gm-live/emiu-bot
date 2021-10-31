@@ -6,8 +6,6 @@ namespace App\Traits;
 
 trait DartTrait
 {
-	// 射飛鏢開始
-    protected $sDartBegin = '射飛鏢';
 
     public function getDartRedisKey($iChatId)
     {
@@ -17,12 +15,11 @@ trait DartTrait
 	public function handleDartStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if ($sText != $this->sDartBegin) {
+        if (! in_array($sText, config('game.dart'))) {
             return;
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iChatId  = $aMessage['chat']['id'];
 
         $oResult = $this->oTgRequest::sendDice([
@@ -55,7 +52,6 @@ trait DartTrait
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iUserDartValue = $aMessage['dice']['value'];
 
         $sResText = match(true) {

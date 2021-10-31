@@ -6,12 +6,6 @@ namespace App\Traits;
 
 trait BowlingTrait
 {
-    // 開始
-    protected $sBowlingBeginKeywords = [
-        '保齡球',
-        'bowling',
-    ];
-
     public function getBowlingRedisKey($iChatId)
     {
         return sprintf(config('redisKeys.bowling_redis_key'), $iChatId);
@@ -20,12 +14,11 @@ trait BowlingTrait
     public function handleBowlingStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (! in_array($sText, $this->sBowlingBeginKeywords)) {
+        if (! in_array($sText, config('game.bowling'))) {
             return;
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iChatId  = $aMessage['chat']['id'];
 
         $oResult = $this->oTgRequest::sendDice([
@@ -58,7 +51,6 @@ trait BowlingTrait
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iUserBowlingValue = $aMessage['dice']['value'];
 
         $sResText = match(true) {

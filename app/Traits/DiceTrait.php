@@ -6,11 +6,6 @@ namespace App\Traits;
 
 trait DiceTrait
 {
-	// 十八啦開始
-    protected $sDiceBeginKeywords = [
-        '十八啦',
-        '十八拉',
-    ];
 
     public function getDiceRedisKey($iChatId)
     {
@@ -20,12 +15,11 @@ trait DiceTrait
 	public function handleDiceStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (! in_array($sText, $this->sDiceBeginKeywords)) {
+        if (! in_array($sText, config('game.dice'))) {
             return;
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iChatId  = $aMessage['chat']['id'];
 
         $oResult = $this->oTgRequest::sendDice([
@@ -57,7 +51,6 @@ trait DiceTrait
         }
 
         $iMessageId = $aMessage['message_id'];
-        $iUserId  = $aMessage['from']['id'];
         $iUserDiceValue = $aMessage['dice']['value'];
 
         $sResText = match(true) {

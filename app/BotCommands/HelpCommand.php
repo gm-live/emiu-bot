@@ -7,6 +7,7 @@ namespace App\BotCommands;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
+use App\Services\BotService;
 
 class HelpCommand extends UserCommand
 {
@@ -42,6 +43,7 @@ class HelpCommand extends UserCommand
         $iMsgId = $oMessage->getMessageId();
         $iChatId = $oMessage->getChat()->getId();
         
+        // 命令類
         $sText = "命令:\n";
         $oTelegram = $this->getTelegram();
         $aCommands = $oTelegram->getCommandsList();
@@ -51,10 +53,15 @@ class HelpCommand extends UserCommand
             }
         }
 
+        // 遊戲類
+        $sText .= "遊戲:\n";
+        $sText .= "    🎲 - " . join(',', config('game.dice')) . "\n";
+        $sText .= "    🎯 - " . join(',', config('game.dart')) . "\n";
+        $sText .= "    🎳 - " . join(',', config('game.bowling')) . "\n";
+
         $data = [
             'chat_id' => $iChatId,
             'text'    => $sText,
-            'reply_to_message_id' => $iMsgId,
         ];
 
         return Request::sendMessage($data);

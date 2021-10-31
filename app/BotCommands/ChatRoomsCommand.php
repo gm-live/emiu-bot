@@ -53,7 +53,7 @@ class ChatRoomsCommand extends UserCommand
         if (in_array($iUserId, $aAdminUserIds)) {
             $sText .= "所有房間:\n";
             foreach ($aActiveRooms as $oRoom) {
-                $sText .= $oRoom->chat_title . ' (' . $oRoom->chat_id . ") \n";
+                $sText .= $oRoom->chat_title . ' ( ' . $oRoom->chat_id . " ) \n";
             }
             
         } else {
