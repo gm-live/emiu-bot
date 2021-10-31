@@ -6,7 +6,7 @@ namespace App\Traits;
 
 trait InOutChatRoomTrait
 {
-    protected $sKickerMsg = '踢屁\!渣男\!';
+    protected $sKickerMsg = '踢屁\! 渣男\!';
 
 	public function handleInChatRoom($aMessage): void
     {
@@ -18,7 +18,9 @@ trait InOutChatRoomTrait
         $iChatId = $aMessage['chat']['id'];
         $iBotId  = $this->getBotId();
         foreach ($aNewMembers as $aUser) {
+
             if ($iBotId == $aUser['id']) {
+                $this->oRoomRepo->changeStatusToActive($iChatId);
                 continue;
             }
 
@@ -33,6 +35,7 @@ trait InOutChatRoomTrait
             return;
         }
 
+        $iChatId = $aMessage['chat']['id'];
         $iBotId      = $this->getBotId();
         $iLeftUserId = $aMessage['left_chat_participant']['id'];
         if ($iLeftUserId != $iBotId) {
@@ -41,6 +44,8 @@ trait InOutChatRoomTrait
 
         $iKickerUserId = $aMessage['from']['id'];
         $this->sendMsg($iKickerUserId, $this->sKickerMsg);
+
+        $this->oRoomRepo->changeStatusToUnActive($iChatId);
     }
 
 }

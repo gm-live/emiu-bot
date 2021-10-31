@@ -165,4 +165,10 @@ class BotService extends BaseService
         $this->oRedis->hset($sKey, (string) $iChatId, 1);
     }
 
+
+    public function getActiveRooms()
+    {
+        return $this->oRoomRepo->getAcvtiveRooms();
+    }
+
 }

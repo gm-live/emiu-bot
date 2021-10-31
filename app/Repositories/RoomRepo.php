@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Model\Room;
 use Hyperf\Di\Annotation\Inject;
+use App\Constants\RoomConst;
 
 class RoomRepo extends BaseRepo
 {
@@ -28,6 +29,20 @@ class RoomRepo extends BaseRepo
         $oRoom->saveOrFail();
     }
 
+    public function changeStatusToUnActive($iChatId)
+    {
+        $this->oRoom->where('chat_id', $iChatId)
+            ->where('status', RoomConst::STATUS_ACTIVE)
+            ->update(['status' => RoomConst::STATUS_UNACTIVE]);
+    }
+
+    public function changeStatusToActive($iChatId)
+    {
+        $this->oRoom->where('chat_id', $iChatId)
+            ->where('status', RoomConst::STATUS_UNACTIVE)
+            ->update(['status' => RoomConst::STATUS_ACTIVE]);
+    }
+
     public function checkRoomExist($iChatId)
     {
         $sKey    = config('redisKeys.room_repeat_check');
@@ -42,6 +57,13 @@ class RoomRepo extends BaseRepo
         }
 
         return false;
+    }
+
+    public function getAcvtiveRooms()
+    {
+        return $this->oRoom
+            ->where('status', RoomConst::STATUS_ACTIVE)
+            ->get();
     }
 
 }

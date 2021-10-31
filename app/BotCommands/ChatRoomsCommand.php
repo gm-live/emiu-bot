@@ -8,23 +8,24 @@ use App\Maker\Interfaces\TelegramInterface;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
+use App\Services\BotService;
 
-class ListCommand extends UserCommand
+class ChatRoomsCommand extends UserCommand
 {
     /**
      * @var string
      */
-    protected $name = 'list';
+    protected $name = 'chatrooms';
 
     /**
      * @var string
      */
-    protected $description = '列出所有命令.';
+    protected $description = '所有所在群組.';
 
     /**
      * @var string
      */
-    protected $usage = '/list';
+    protected $usage = '/chatrooms';
 
     /**
      * @var string
@@ -40,20 +41,29 @@ class ListCommand extends UserCommand
     public function execute(): ServerResponse
     {
         $oMessage = $this->getMessage();
+        $iMsgId = $oMessage->getMessageId();
         $iChatId = $oMessage->getChat()->getId();
-        
-        $sText = "所有命令:\n";
-        $oTelegram = app(TelegramInterface::class);
-        $aCommands = $oTelegram->getCommandsList();
-        foreach ($aCommands as $sCommandName => $oCommand) {
-            if ($oCommand->getUsage()) {
-                $sText .= '    ' . $oCommand->getUsage() . ' - ' . $oCommand->getDescription() . "\n";
+        $iUserId = $oMessage->getFrom()->getId();
+
+        $oService = app(BotService::class);
+        $aActiveRooms = $oService->getActiveRooms();
+
+        $sText = '';
+        $aAdminUserIds = $oService->getBotAdmins();
+        if (in_array($iUserId, $aAdminUserIds)) {
+            $sText .= "所有房間:\n";
+            foreach ($aActiveRooms as $oRoom) {
+                $sText .= $oRoom->chat_title . ' (' . $oRoom->chat_id . ") \n";
             }
+            
+        } else {
+            $sText = '403';
         }
 
         $data = [
             'chat_id' => $iChatId,
             'text'    => $sText,
+            'reply_to_message_id' => $iMsgId,
         ];
 
         return Request::sendMessage($data);
