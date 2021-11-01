@@ -20,6 +20,8 @@ trait MoraTrait
         'selective'         => true,
     ];
 
+    protected $iRoundCount = 3;
+
     public function getMoraRedisKey($iChatId, $iUserId)
     {
         return sprintf(config('redisKeys.mora_redis_key'), $iChatId, $iUserId);
@@ -49,7 +51,7 @@ trait MoraTrait
         }
 
         $sKey = $this->getMoraRedisKey($iChatId, $iUserId);
-        $this->oRedis->setex($sKey, 180, 3);
+        $this->oRedis->setex($sKey, 180, $this->iRoundCount);
     }
 
     public function handleMoraResult($aMessage): void
