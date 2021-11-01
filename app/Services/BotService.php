@@ -113,6 +113,10 @@ class BotService extends BaseService
         if (! $bTagged) {
             return;
         }
+        if (strpos($sText, '@' . config('bot.username')) === false) {
+            return;
+        }
+        
         $this->sendSticker($iChatId, config('bot.be_tagged_sticker'));
     }
 
