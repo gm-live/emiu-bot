@@ -6,6 +6,20 @@ namespace App\Traits;
 
 trait MoraTrait
 {
+
+    protected $aMoraKeyboardConfig = [
+        'keyboard' => [
+            [
+                ['text' => '✌️'],
+                ['text' => '👊'],
+                ['text' => '🖐'],
+            ],
+        ],
+        'one_time_keyboard' => true,
+        'resize_keyboard'   => true,
+        'selective'         => true,
+    ];
+
     public function getMoraRedisKey($iChatId, $iUserId)
     {
         return sprintf(config('redisKeys.mora_redis_key'), $iChatId, $iUserId);
@@ -26,17 +40,7 @@ trait MoraTrait
             'chat_id'             => $iChatId,
             'text'                => '來猜拳',
             'reply_to_message_id' => $iMessageId,
-            'reply_markup'        => [
-                'keyboard'          => [
-                    [
-                        ['text' => '✌️'],
-                        ['text' => '👊'],
-                        ['text' => '🖐'],
-                    ],
-                ],
-                'resize_keyboard'   => true,
-                'selective'         => true,
-            ],
+            'reply_markup'        => $this->aMoraKeyboardConfig,
         ]);
 
         if (!$oResult->ok) {
@@ -67,28 +71,41 @@ trait MoraTrait
         $iMessageId = $aMessage['message_id'];
         $iUserId    = $aMessage['from']['id'];
         $iChatId    = $aMessage['chat']['id'];
+        
+        // 檢查剩幾把拳
         $sKey       = $this->getMoraRedisKey($iChatId, $iUserId);
         $iDelCount  = $this->oRedis->decr($sKey);
         if ($iDelCount < 0) {
             return;
         }
 
+        // 決定要出什麼
         $aMoraRange = ['✌️', '👊', '🖐'];
         $iRand      = rand(0, 2);
         $sBotMora   = $aMoraRange[$iRand];
+
+        // 預設返回
         $aMsgParams = [
             'chat_id'             => $iChatId,
             'text'                => $sBotMora,
             'reply_to_message_id' => $iMessageId,
         ];
+        
         if ($iDelCount == 0) {
+            // 最後一次要收鍵盤
             $aMsgParams['reply_markup'] = [
                 'remove_keyboard' => true,
                 'selective'       => true,
             ];
+        } else {
+            // 每次都打開鍵盤
+            $aMsgParams['reply_markup'] = $this->aMoraKeyboardConfig;
         }
+
+        // 出拳
         $this->oTgRequest::sendMessage($aMsgParams);
 
+        // 判定+嘴砲
         $sResText = match(true) {
             $sBotMora == '👊' &&  $sText == '✌️'  => '廢物\!',
             $sBotMora == '🖐' &&  $sText == '👊'  => '廢物\!',
