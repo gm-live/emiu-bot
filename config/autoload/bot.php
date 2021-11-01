@@ -36,6 +36,8 @@ return [
         'handleDartResult', // 飛鏢遊戲比對結果
         'handleBowlingStart', // bowling start
         'handleBowlingResult', // bowling result
+        'handleMoraStart', // 猜拳
+        'handleMoraResult', // 猜拳結果結果
 
         // trash talk
         'beefNoodle',

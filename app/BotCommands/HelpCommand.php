@@ -58,6 +58,7 @@ class HelpCommand extends UserCommand
         $sText .= "    🎲 - " . join(',', config('game.dice')) . "\n";
         $sText .= "    🎯 - " . join(',', config('game.dart')) . "\n";
         $sText .= "    🎳 - " . join(',', config('game.bowling')) . "\n";
+        $sText .= "    ✌️ - " . join(',', config('game.mora')) . "\n";
 
         $data = [
             'chat_id' => $iChatId,

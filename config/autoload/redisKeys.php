@@ -19,6 +19,10 @@ return [
     // 飛鏢遊戲
     'dart_redis_key' => 'dart_game:%s',
 
+    // 保齡球
     'bowling_redis_key' => 'bowling_redis_key:$s',
+
+    // 猜拳
+    'mora_redis_key' => 'mora_redis_key:$s:$s',
 
 ];
