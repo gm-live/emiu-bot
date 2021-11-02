@@ -20,6 +20,8 @@ trait MoraTrait
         'selective'         => true,
     ];
 
+    protected $aSymbols = ['✌️', '👊', '🖐'];
+
     protected $iRoundCount = 3;
 
     public function getMoraRedisKey($iChatId, $iUserId)
@@ -60,12 +62,7 @@ trait MoraTrait
 
         if (
             empty($sText) ||
-            (
-                $sText != '✌️' &&
-                $sText != '👊' &&
-                $sText != '🖐'
-            )
-
+            ! in_array($sText, $this->aSymbols)
         ) {
             return;
         }
@@ -82,9 +79,7 @@ trait MoraTrait
         }
 
         // 決定要出什麼
-        $aMoraRange = ['✌️', '👊', '🖐'];
-        $iRand      = rand(0, 2);
-        $sBotMora   = $aMoraRange[$iRand];
+        $sBotMora = $this->aSymbols[array_rand($this->aSymbols)];
 
         // 預設返回
         $aMsgParams = [
