@@ -44,5 +44,6 @@ return [
         'beefNoodle',
         'braisedPorkOnRice',
         'paipai',
+        'iAmReal',
     ],
 ];
