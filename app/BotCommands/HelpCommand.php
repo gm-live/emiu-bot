@@ -19,7 +19,7 @@ class HelpCommand extends UserCommand
     /**
      * @var string
      */
-    protected $description = '列出所有命令.';
+    protected $description = '列出所有功能.';
 
     /**
      * @var string
@@ -55,10 +55,11 @@ class HelpCommand extends UserCommand
 
         // 遊戲類
         $sText .= "遊戲:\n";
-        $sText .= "    🎲 - " . join(',', config('game.dice')) . "\n";
-        $sText .= "    🎯 - " . join(',', config('game.dart')) . "\n";
-        $sText .= "    🎳 - " . join(',', config('game.bowling')) . "\n";
-        $sText .= "    ✌️ - " . join(',', config('game.mora')) . "\n";
+        $sText .= "    🎲 - " . join(',', config('game.dice.start_keyword')) . "\n";
+        $sText .= "    🎯 - " . join(',', config('game.dart.start_keyword')) . "\n";
+        $sText .= "    🎳 - " . join(',', config('game.bowling.start_keyword')) . "\n";
+        $sText .= "    ✌️ - " . join(',', config('game.mora.start_keyword')) . "\n";
+        $sText .= "    終極密碼 - " . join(',', config('game.ultimate_pwd.start_keyword')) . "\n";
 
         $data = [
             'chat_id' => $iChatId,

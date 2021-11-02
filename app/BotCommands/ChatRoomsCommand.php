@@ -57,7 +57,7 @@ class ChatRoomsCommand extends UserCommand
             }
             
         } else {
-            $sText = '403';
+            $sText = '403 Access Denied!';
         }
 
         $data = [

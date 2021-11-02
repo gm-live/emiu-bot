@@ -14,7 +14,7 @@ trait BowlingTrait
     public function handleBowlingStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (! in_array($sText, config('game.bowling'))) {
+        if (! in_array($sText, config('game.bowling.start_keyword'))) {
             return;
         }
 

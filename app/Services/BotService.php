@@ -8,6 +8,7 @@ use App\Repositories\RoomRepo;
 use App\Repositories\UserRepo;
 use Hyperf\Di\Annotation\Inject;
 use Longman\TelegramBot\Entities\Update;
+use Hyperf\Guzzle\ClientFactory;
 
 class BotService extends BaseService
 {
@@ -19,6 +20,7 @@ class BotService extends BaseService
     use \App\Traits\DartTrait;
     use \App\Traits\BowlingTrait;
     use \App\Traits\MoraTrait;
+    use \App\Traits\UltimatePwdTrait;
 
     /**
      * @Inject
@@ -31,6 +33,12 @@ class BotService extends BaseService
      * @var RoomRepo
      */
     protected $oRoomRepo;
+
+    /**
+     * @Inject
+     * @var ClientFactory
+     */
+    protected $oClientFactory;
 
     public function getTagUserString($iUserId, $sTagString)
     {
@@ -117,7 +125,7 @@ class BotService extends BaseService
         if (strpos($sText, '@' . config('bot.username')) === false) {
             return;
         }
-        
+
         $this->sendSticker($iChatId, config('bot.be_tagged_sticker'));
     }
 

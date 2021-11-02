@@ -5,21 +5,36 @@ declare (strict_types = 1);
 return [
 
     'dice' => [
-        '十八啦',
-        '十八拉',
+        'start_keyword' => [
+            '十八啦',
+            '十八拉',
+        ],
     ],
 
     'dart' => [
-        '射飛鏢',
+        'start_keyword' => [
+            '射飛鏢',
+        ],
     ],
 
     'bowling' => [
-        '保齡球',
-        'bowling',
+        'start_keyword' => [
+            '保齡球',
+            'bowling',
+        ],
     ],
 
     'mora' => [
-        '猜拳',
-        '剪刀石頭布',
+        'start_keyword' => [
+            '猜拳',
+            '剪刀石頭布',
+        ],
+    ],
+
+    'ultimate_pwd' => [
+        'start_keyword' => [
+            '終極密碼',
+        ],
+        'init_url' => 'http://google.com/123',
     ],
 ];

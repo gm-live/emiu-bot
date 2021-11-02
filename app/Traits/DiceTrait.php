@@ -15,7 +15,7 @@ trait DiceTrait
 	public function handleDiceStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (! in_array($sText, config('game.dice'))) {
+        if (! in_array($sText, config('game.dice.start_keyword'))) {
             return;
         }
 

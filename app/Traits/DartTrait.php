@@ -15,7 +15,7 @@ trait DartTrait
 	public function handleDartStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (! in_array($sText, config('game.dart'))) {
+        if (! in_array($sText, config('game.dart.start_keyword'))) {
             return;
         }
 

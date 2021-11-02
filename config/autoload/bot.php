@@ -38,6 +38,7 @@ return [
         'handleBowlingResult', // bowling result
         'handleMoraStart', // 猜拳
         'handleMoraResult', // 猜拳結果結果
+        'handleUltimatePwdStart', // 終極密碼開始
 
         // trash talk
         'beefNoodle',

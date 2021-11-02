@@ -32,7 +32,7 @@ trait MoraTrait
     public function handleMoraStart($aMessage): void
     {
         $sText = $aMessage['text'] ?? '';
-        if (!in_array($sText, config('game.mora'))) {
+        if (!in_array($sText, config('game.mora.start_keyword'))) {
             return;
         }
 
@@ -81,26 +81,8 @@ trait MoraTrait
         // 決定要出什麼
         $sBotMora = $this->aSymbols[array_rand($this->aSymbols)];
 
-        // 預設返回
-        $aMsgParams = [
-            'chat_id'             => $iChatId,
-            'text'                => $sBotMora,
-            'reply_to_message_id' => $iMessageId,
-        ];
-        
-        if ($iDelCount == 0) {
-            // 最後一次要收鍵盤
-            $aMsgParams['reply_markup'] = [
-                'remove_keyboard' => true,
-                'selective'       => true,
-            ];
-        } else {
-            // 每次都打開鍵盤
-            $aMsgParams['reply_markup'] = $this->aMoraKeyboardConfig;
-        }
-
         // 出拳
-        $this->oTgRequest::sendMessage($aMsgParams);
+        $this->sendMsg($iChatId, $sBotMora, $iMessageId);
 
         // 判定+嘴砲
         $sResText = match(true) {
@@ -112,7 +94,26 @@ trait MoraTrait
             $sText == '🖐' &&  $sBotMora == '👊'  => 'Emiu 認輸了\!',
             $sText == '✌️' &&  $sBotMora == '🖐'  => 'Emiu 認輸了\!',
         };
-        $this->sendMsg($iChatId, $sResText, $iMessageId);
+
+        $aMsgParams = [
+            'chat_id'             => $iChatId,
+            'text'                => $sResText,
+            'reply_to_message_id' => $iMessageId,
+            'parse_mode'          => 'MarkdownV2',
+        ];
+
+        if ($iDelCount == 0) {
+            // 最後一次要收鍵盤
+            $aMsgParams['reply_markup'] = [
+                'remove_keyboard' => true,
+                'selective'       => true,
+            ];
+        } else {
+            // 每次都打開鍵盤
+            $aMsgParams['reply_markup'] = $this->aMoraKeyboardConfig;
+        }
+
+        $this->oTgRequest::sendMessage($aMsgParams);
     }
 
 }
