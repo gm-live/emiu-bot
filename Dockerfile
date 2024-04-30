@@ -1,51 +1,42 @@
-# Default Dockerfile
-#
-# @link     https://www.hyperf.io
-# @document https://hyperf.wiki
-# @contact  group@hyperf.io
-# @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+# 基於官方 PHP 8.0 鏡像
+FROM php:8.0
 
-FROM hyperf/hyperf:8.0-alpine-v3.12-swoole
-LABEL maintainer="Hyperf Developers <group@hyperf.io>" version="1.0" license="MIT" app.name="Hyperf"
+# 安裝常用 PHP 擴展
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libssl-dev \
+    libxml2-dev \
+    zlib1g-dev \
+    libpq-dev \
+    libmcrypt-dev \
+    libmagickwand-dev \
+    && docker-php-ext-install -j$(nproc) \
+    gd \
+    zip \
+    opcache \
+    pdo_mysql \
+    mysqli \
+    pdo_pgsql \
+    pcntl \
+    && pecl install redis \
+    && pecl install swoole-4.8.6 \
+    && docker-php-ext-enable redis swoole pcntl  # 移除 imagick 和 mongodb
 
-##
-# ---------- env settings ----------
-##
-# --build-arg timezone=Asia/Shanghai
-ARG timezone
+# 修改 swoole.use_shortname
+RUN echo "swoole.use_shortname = 'Off'" >> /usr/local/etc/php/php.ini
 
-ENV TIMEZONE=${timezone:-"Asia/Shanghai"} \
-    APP_ENV=prod \
-    SCAN_CACHEABLE=(true)
+# 安裝 Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# update
-RUN set -ex \
-    # show php version and extensions
-    && php -v \
-    && php -m \
-    && php --ri swoole \
-    #  ---------- some config ----------
-    && cd /etc/php8 \
-    # - config PHP
-    && { \
-        echo "upload_max_filesize=128M"; \
-        echo "post_max_size=128M"; \
-        echo "memory_limit=1G"; \
-        echo "date.timezone=${TIMEZONE}"; \
-    } | tee conf.d/99_overrides.ini \
-    # - config timezone
-    && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
-    && echo "${TIMEZONE}" > /etc/timezone \
-    # ---------- clear works ----------
-    && rm -rf /var/cache/apk/* /tmp/* /usr/share/man \
-    && echo -e "\033[42;37m Build Completed :).\033[0m\n"
+# 安裝時區設置
+RUN ln -snf /usr/share/zoneinfo/Asia/Taipei /etc/localtime && echo Asia/Taipei > /etc/timezone
 
 WORKDIR /opt/www
 
-# Composer Cache
-# COPY ./composer.* /opt/www/
-# RUN composer install --no-dev --no-scripts
-
+# 複製應用程序代碼並安裝依賴項
 COPY . /opt/www
 RUN composer install --no-dev -o && php bin/hyperf.php
 
